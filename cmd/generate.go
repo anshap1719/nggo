@@ -47,10 +47,15 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		if name == "" {
+			fmt.Errorf("%s", "no name provided")
+			return
+		}
 		generateAngularProject(name)
 		generateGoProject(name)
 		if err := modifyAngularFiles(); err != nil {
 			fmt.Errorf("error conecting go and angular: %s", err.Error())
+			return
 		}
 	},
 }
@@ -76,17 +81,18 @@ func generateAngularProject(name string) {
 	runExternalCmd("ng", []string{
 		"new",
 		name,
-	}, nil)
+	})
 }
 
 func generateGoProject(name string) {
 	fmt.Println(BlueFunc()("Generating Go Files"))
 	var mainFileContent = "package main\r\n\r\nimport (\r\n  \"github.com/gorilla/mux\"\r\n  \"net/http\"\r\n  \"os\"\r\n  \"log\"\r\n\"" + name + "/src/server/utils\"\r\n  \"fmt\"\r\n  \"github.com/rs/cors\"\r\n)\r\n\r\nfunc main() {\r\n  r := mux.NewRouter()\r\n\r\n  r.HandleFunc(\"/hello-world\", helloWorld)\r\n\r\n  // Solves Cross Origin Access Issue\r\n  c := cors.New(cors.Options{\r\n    AllowedOrigins: []string{\"http://localhost:4200\"},\r\n  })\r\n  handler := c.Handler(r)\r\n\r\n  srv := &http.Server{\r\n    Handler: handler,\r\n    Addr:    \":\" + os.Getenv(\"PORT\"),\r\n  }\r\n\r\n  log.Fatal(srv.ListenAndServe())\r\n}\r\n\r\nfunc helloWorld(w http.ResponseWriter, r *http.Request) {\r\n  var data = struct {\r\n    Title string `json:\"title\"`\r\n  }{\r\n    Title: \"Golang + Angular Starter Kit\",\r\n  }\r\n\r\n  jsonBytes, err := utils.StructToJson(data); if err != nil {\r\n    fmt.Print(err)\r\n  }\r\n\r\n  w.Header().Set(\"Content-Type\", \"application/json\")\r\n  w.Write(jsonBytes)\r\n  return\r\n}"
 	src := "./" + name + "/src/"
-	os.Mkdir(src + "server", 0700)
+	os.Mkdir(src+"server", 0700)
 	os.Chdir(src + "server")
 
-	f, err := os.Create("main.go"); if err != nil {
+	f, err := os.Create("main.go")
+	if err != nil {
 		fmt.Errorf("error generating project: %s", err.Error())
 	}
 	f.WriteString(mainFileContent)
@@ -95,14 +101,15 @@ func generateGoProject(name string) {
 	os.Mkdir("utils", 0700)
 	os.Chdir("utils")
 
-	f2, err := os.Create("json.go"); if err != nil {
+	f2, err := os.Create("json.go")
+	if err != nil {
 		fmt.Errorf("error generating project: %s", err.Error())
 	}
 	f2.WriteString(jsonFileContent)
 
 	fmt.Println(BlueFunc()("Formatting Go Files"))
 	os.Chdir("../")
-	runExternalCmd("go", []string{"fmt", "./...",}, nil)
+	runExternalCmd("go", []string{"fmt", "./..."})
 	fmt.Println(BlueFunc()("Done"))
 }
 

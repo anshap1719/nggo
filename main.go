@@ -14,7 +14,9 @@
 
 package main
 
-import "nggo2/cmd"
+import (
+	"github.com/anshap1719/nggo/cmd"
+)
 
 func main() {
 	cmd.Execute()

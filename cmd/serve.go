@@ -16,7 +16,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"sync"
+	"os"
 )
 
 // serveCmd represents the serve command
@@ -30,13 +30,13 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		wg := &sync.WaitGroup{}
-		wg.Add(2)
+		quit := make(chan int)
 
-		go serveGo(wg)
-		go serveAngular(wg)
+		go runExternalCmd("ng", []string{"serve"})
+		os.Chdir("./src/server/")
+		go runExternalCmd("gin", []string{})
 
-		wg.Wait()
+		<-quit
 	},
 }
 
@@ -52,12 +52,4 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// serveCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-}
-
-func serveGo(wg *sync.WaitGroup) {
-	runExternalCmd("gin", []string{}, wg)
-}
-
-func serveAngular(wg *sync.WaitGroup) {
-	runExternalCmd("ng", []string{"serve",}, wg)
 }
