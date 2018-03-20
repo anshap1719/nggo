@@ -16,11 +16,10 @@ package cmd
 
 import (
 	"fmt"
-
 	"github.com/spf13/cobra"
 	"os"
-	//"github.com/mgutz/ansi"
 	"io/ioutil"
+	"strings"
 )
 
 var jsonFileContent = "package utils\r\n\r\nimport (\r\n  \"encoding/json\"\r\n  \"bytes\"\r\n)\r\n\r\nfunc StructToJson (data interface{}) ([]byte, error) {\r\n  buf := new(bytes.Buffer)\r\n\r\n  if err := json.NewEncoder(buf).Encode(data); err != nil {\r\n    return nil, err\r\n  }\r\n\r\n  return buf.Bytes(), nil\r\n}"
@@ -35,6 +34,7 @@ var environmentContent = "// The file contents for the current environment will 
 
 var styles string
 var name string
+var ng string
 
 // generateCmd represents the generate command
 var generateCmd = &cobra.Command{
@@ -63,6 +63,7 @@ to quickly create a Cobra application.`,
 func init() {
 	generateCmd.Flags().StringVarP(&styles, "style", "s", "", "Set CSS Preprocessor To SCSS/LESS")
 	generateCmd.Flags().StringVarP(&name, "name", "n", "", "Set Project Name")
+	generateCmd.Flags().StringVarP(&ng, "ng", "", "", "Set Arguments For ng new")
 	generateCmd.MarkFlagRequired("name")
 	RootCmd.AddCommand(generateCmd)
 
@@ -78,17 +79,30 @@ func init() {
 }
 
 func generateAngularProject(name string) {
-	runExternalCmd("ng", []string{
+	args := []string{
 		"new",
 		name,
-	})
+	}
+
+	if ng != "" {
+		ngArgs := strings.Split(ng, " ")
+
+		for _, arg := range ngArgs {
+			args = append(args, arg)
+		}
+	}
+
+	runExternalCmd("ng", args)
 }
 
 func generateGoProject(name string) {
 	fmt.Println(BlueFunc()("Generating Go Files"))
-	var mainFileContent = "package main\r\n\r\nimport (\r\n  \"github.com/gorilla/mux\"\r\n  \"net/http\"\r\n  \"os\"\r\n  \"log\"\r\n\"" + name + "/src/server/utils\"\r\n  \"fmt\"\r\n  \"github.com/rs/cors\"\r\n)\r\n\r\nfunc main() {\r\n  r := mux.NewRouter()\r\n\r\n  r.HandleFunc(\"/hello-world\", helloWorld)\r\n\r\n  // Solves Cross Origin Access Issue\r\n  c := cors.New(cors.Options{\r\n    AllowedOrigins: []string{\"http://localhost:4200\"},\r\n  })\r\n  handler := c.Handler(r)\r\n\r\n  srv := &http.Server{\r\n    Handler: handler,\r\n    Addr:    \":\" + os.Getenv(\"PORT\"),\r\n  }\r\n\r\n  log.Fatal(srv.ListenAndServe())\r\n}\r\n\r\nfunc helloWorld(w http.ResponseWriter, r *http.Request) {\r\n  var data = struct {\r\n    Title string `json:\"title\"`\r\n  }{\r\n    Title: \"Golang + Angular Starter Kit\",\r\n  }\r\n\r\n  jsonBytes, err := utils.StructToJson(data); if err != nil {\r\n    fmt.Print(err)\r\n  }\r\n\r\n  w.Header().Set(\"Content-Type\", \"application/json\")\r\n  w.Write(jsonBytes)\r\n  return\r\n}"
+	wd, _ := os.Getwd()
+	path := strings.TrimPrefix(wd, os.Getenv("GOPATH"))
+	path = strings.TrimPrefix(path, "/src/")
+	mainFileContent := "package main\r\n\r\nimport (\r\n  \"github.com/gorilla/mux\"\r\n  \"net/http\"\r\n  \"os\"\r\n  \"log\"\r\n\"" + path + "/" + name + "/src/server/utils" + "\"\r\n  \"fmt\"\r\n  \"github.com/rs/cors\"\r\n)\r\n\r\nfunc main() {\r\n  r := mux.NewRouter()\r\n\r\n  r.HandleFunc(\"/hello-world\", helloWorld)\r\n\r\n  // Solves Cross Origin Access Issue\r\n  c := cors.New(cors.Options{\r\n    AllowedOrigins: []string{\"http://localhost:4200\"},\r\n  })\r\n  handler := c.Handler(r)\r\n\r\n  srv := &http.Server{\r\n    Handler: handler,\r\n    Addr:    \":\" + os.Getenv(\"PORT\"),\r\n  }\r\n\r\n  log.Fatal(srv.ListenAndServe())\r\n}\r\n\r\nfunc helloWorld(w http.ResponseWriter, r *http.Request) {\r\n  var data = struct {\r\n    Title string `json:\"title\"`\r\n  }{\r\n    Title: \"Golang + Angular Starter Kit\",\r\n  }\r\n\r\n  jsonBytes, err := utils.StructToJson(data); if err != nil {\r\n    fmt.Print(err)\r\n  }\r\n\r\n  w.Header().Set(\"Content-Type\", \"application/json\")\r\n  w.Write(jsonBytes)\r\n  return\r\n}"
 	src := "./" + name + "/src/"
-	os.Mkdir(src+"server", 0700)
+	os.Mkdir(src + "server", 0700)
 	os.Chdir(src + "server")
 
 	f, err := os.Create("main.go")

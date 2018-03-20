@@ -17,7 +17,12 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	"os"
+	"strings"
 )
+
+var ngserve string
+var goserve string
+
 
 // serveCmd represents the serve command
 var serveCmd = &cobra.Command{
@@ -32,7 +37,25 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		quit := make(chan int)
 
-		go runExternalCmd("ng", []string{"serve"})
+		argss := []string{"serve"}
+
+		if ngserve != "" {
+			ngArgs := strings.Split(ngserve, " ")
+			for _, arg := range ngArgs {
+				argss = append(argss, arg)
+			}
+		}
+
+		go runExternalCmd("ng", argss)
+
+		argss = []string{}
+
+		if goserve != "" {
+			goArgs := strings.Split(ngserve, " ")
+			for _, arg := range goArgs {
+				argss = append(argss, arg)
+			}
+		}
 		os.Chdir("./src/server/")
 		go runExternalCmd("gin", []string{})
 
@@ -41,6 +64,7 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
+	serveCmd.Flags().StringVarP(&ngserve, "ng", "", "", "Set Arguments For ng serve")
 	RootCmd.AddCommand(serveCmd)
 
 	// Here you will define your flags and configuration settings.
