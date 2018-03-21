@@ -31,4 +31,4 @@ Run `nggo serve` inside project folder to run the webpack dev server for angular
 
 ## License
 
-This project is licensed under the Apache License - see the [LICENSE.md](LICENSE) file for details.
+This project is licensed under the Apache License - see the [LICENSE](LICENSE) file for details.
