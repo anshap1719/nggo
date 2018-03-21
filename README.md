@@ -20,7 +20,7 @@ This tool supports all angular flags and options that can be used with `ng new`.
 ## Install Dependencies
 By default, the angular dependencies will be installed automatically on generation of project (not if you use --skip-install). You may run `nggo install` inside your project folder to install node + go dependencies. This is a crucial step as the generated go project has dependencies apart from standard library
 
-**Note:** *Projects must be generatead in any subdirectory of your GOPATH*
+**Note:** *Projects must be generated in any subdirectory of your GOPATH*
 
 ## Start Development Server
 Run `nggo serve` inside project folder to run the webpack dev server for angular and gin live server for go.
