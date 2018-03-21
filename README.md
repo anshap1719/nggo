@@ -1,6 +1,6 @@
-# NGGO (WIP)
+# NGGO
 
-A CLI tool for working with Angular + Go projects. Currently under development.
+A CLI tool for working with Angular + Go projects.
 
 ## Prerequisites
 - You must have Go installed and GOPATH & GOBIN setup properly
