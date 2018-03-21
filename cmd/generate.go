@@ -30,7 +30,7 @@ var appModuleContent = "import { BrowserModule } from '@angular/platform-browser
 
 var helloWorldServiceContent = "import { Injectable } from '@angular/core';\r\nimport {Http} from '@angular/http';\r\nimport {environment} from '../environments/environment';\r\nimport 'rxjs/add/operator/map';\r\n\r\n@Injectable()\r\nexport class HelloWorldService {\r\n\r\n  constructor(private http: Http) { }\r\n\r\n  getTitle() {\r\n    return this.http.get(`${environment.serverUrl}/hello-world`)\r\n      .map(response => response.json());\r\n  }\r\n\r\n}"
 
-var environmentContent = "// The file contents for the current environment will overwrite these during build.\r\n// The build system defaults to the dev environment which uses `environment.ts`, but if you do\r\n// `ng build --env=prod` then `environment.prod.ts` will be used instead.\r\n// The list of which env maps to which file can be found in `.angular-cli.json`.\r\n\r\nexport const environment = {\r\n  production: false,\r\n  serverUrl: 'http://localhost:4201'\r\n};\r\n"
+var environmentContent = "// The file contents for the current environment will overwrite these during build.\r\n// The build system defaults to the dev environment which uses `environment.ts`, but if you do\r\n// `ng build --env=prod` then `environment.prod.ts` will be used instead.\r\n// The list of which env maps to which file can be found in `.angular-cli.json`.\r\n\r\nexport const environment = {\r\n  production: false,\r\n  serverUrl: 'http://localhost:3000'\r\n};\r\n"
 
 var styles string
 var name string
@@ -97,7 +97,10 @@ func generateAngularProject(name string) {
 
 func generateGoProject(name string) {
 	fmt.Println(BlueFunc()("Generating Go Files"))
-	wd, _ := os.Getwd()
+	wd, err := os.Getwd(); if err != nil {
+		fmt.Println(err)
+		return
+	}
 	path := strings.TrimPrefix(wd, os.Getenv("GOPATH"))
 	path = strings.TrimPrefix(path, "/src/")
 	mainFileContent := "package main\r\n\r\nimport (\r\n  \"github.com/gorilla/mux\"\r\n  \"net/http\"\r\n  \"os\"\r\n  \"log\"\r\n\"" + path + "/" + name + "/src/server/utils" + "\"\r\n  \"fmt\"\r\n  \"github.com/rs/cors\"\r\n)\r\n\r\nfunc main() {\r\n  r := mux.NewRouter()\r\n\r\n  r.HandleFunc(\"/hello-world\", helloWorld)\r\n\r\n  // Solves Cross Origin Access Issue\r\n  c := cors.New(cors.Options{\r\n    AllowedOrigins: []string{\"http://localhost:4200\"},\r\n  })\r\n  handler := c.Handler(r)\r\n\r\n  srv := &http.Server{\r\n    Handler: handler,\r\n    Addr:    \":\" + os.Getenv(\"PORT\"),\r\n  }\r\n\r\n  log.Fatal(srv.ListenAndServe())\r\n}\r\n\r\nfunc helloWorld(w http.ResponseWriter, r *http.Request) {\r\n  var data = struct {\r\n    Title string `json:\"title\"`\r\n  }{\r\n    Title: \"Golang + Angular Starter Kit\",\r\n  }\r\n\r\n  jsonBytes, err := utils.StructToJson(data); if err != nil {\r\n    fmt.Print(err)\r\n  }\r\n\r\n  w.Header().Set(\"Content-Type\", \"application/json\")\r\n  w.Write(jsonBytes)\r\n  return\r\n}"

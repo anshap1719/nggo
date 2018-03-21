@@ -15,18 +15,18 @@
 package cmd
 
 import (
-	"fmt"
-	"github.com/go-cmd/cmd"
 	"github.com/mgutz/ansi"
+	"fmt"
 	"time"
 	"reflect"
+	"github.com/go-cmd/cmd"
 )
 
 func runExternalCmd(name string, args []string) {
 	c := cmd.NewCmd(name, args...)
 	statusChan := c.Start()
 
-	ticker := time.NewTicker(time.Nanosecond)
+	ticker := time.NewTicker(100 * time.Nanosecond)
 
 	var previousLine string
 	var previousError string
@@ -35,10 +35,12 @@ func runExternalCmd(name string, args []string) {
 
 	var color func(string) string
 
-	if name == "ng" {
+	if name == "ng" || name == "npm" {
 		color = ansi.ColorFunc("red+bh")
 	} else if name == "go" || name == "gin" {
 		color = ansi.ColorFunc("cyan+b")
+	} else {
+		color = ansi.ColorFunc("white")
 	}
 
 	var stderr bool
@@ -54,6 +56,7 @@ func runExternalCmd(name string, args []string) {
 
 			if err := status.Error; err != nil {
 				fmt.Errorf("error occurred: %s", err.Error())
+				break
 			}
 
 			n := len(status.Stdout)
@@ -118,20 +121,66 @@ func runExternalCmd(name string, args []string) {
 				continue
 			}
 		}
-		return
 	}()
 
 	// Check if command is done
 	select {
-	case _ = <-statusChan:
-		c.Stop()
-	default:
-		// no, still running
+		case _ = <-statusChan:
+			c.Stop()
+		default:
+			// no, still running
 	}
 
 	// Block waiting for command to exit, be stopped, or be killed
 	_ = <-statusChan
 }
+
+//func runExternalCmd(name string, args []string) {
+//	var stdoutBuf, stderrBuf bytes.Buffer
+//	cmd := exec.Command(name, args...)
+//
+//	var color func(string) string
+//
+//	if name == "ng" {
+//		color = ansi.ColorFunc("red+bh")
+//	} else if name == "go" || name == "gin" {
+//		color = ansi.ColorFunc("cyan+b")
+//	}
+//
+//	stdoutIn, _ := cmd.StdoutPipe()
+//	stderrIn, _ := cmd.StderrPipe()
+//
+//	var errStdout, errStderr error
+//	stdout := io.MultiWriter(os.Stdout, &stdoutBuf)
+//	stderr := io.MultiWriter(os.Stdin, &stderrBuf)
+//	err := cmd.Start()
+//	if err != nil {
+//		log.Fatalf("cmd.Start() failed with '%s'\n", err)
+//	}
+//
+//	go func() {
+//		_, errStdout = io.Copy(stdout, stdoutIn)
+//	}()
+//
+//	go func() {
+//		_, errStderr = io.Copy(stderr, stderrIn)
+//	}()
+//
+//	err = cmd.Wait()
+//	if err != nil {
+//		log.Fatalf("cmd.Run() failed with %s\n", err)
+//	}
+//	if errStdout != nil || errStderr != nil {
+//		log.Fatal("failed to capture stdout or stderr\n")
+//	}
+//	outStr, errStr := string(stdoutBuf.Bytes()), string(stderrBuf.Bytes())
+//	if outStr != "" {
+//		fmt.Printf(color(outStr))
+//	}
+//	if errStr != "" {
+//		fmt.Printf(color(errStr))
+//	}
+//}
 
 func RedFunc() func(string) string {
 	return ansi.ColorFunc("red+bh")
