@@ -12,7 +12,7 @@ A CLI tool for working with Angular + Go projects. Currently under development.
 Run `go get -u github.com/anshap1719/nggo` to install the tool globally.
 
 ## Generate New Project
-Run `nggo generate -n="{project_name}` to generate a new project. You must provide the name of the project using either -n or --name.
+Run `nggo generate -n="{project_name}"` to generate a new project. You must provide the name of the project using either -n or --name.
 
 ## Project Generator Configuration
 This tool supports all angular flags and options that can be used with `ng new`. Simply provide an additional argument to `nggo generate` with flag `--ng`. Ex. `nggo generate -n="new-project" --ng="--skip-install --style=scss"`
