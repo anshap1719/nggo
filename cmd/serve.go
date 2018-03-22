@@ -35,9 +35,7 @@ var serveCmd = &cobra.Command{
 
 		if ngserve != "" {
 			ngArgs := strings.Split(ngserve, " ")
-			for _, arg := range ngArgs {
-				argss = append(argss, arg)
-			}
+			argss = append(argss, ngArgs...)
 		}
 
 		go runExternalCmd("ng", argss)
