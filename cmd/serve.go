@@ -58,7 +58,7 @@ var serveCmd = &cobra.Command{
 }
 
 func init() {
-	serveCmd.Flags().StringVarP(&ngserve, "ng", "", "", "Set Arguments For ng serve")
+	serveCmd.Flags().StringVarP(&ngserve, "ng", "", "", " Use --ngserve to set arguments for angular webback dev server (Ex. --ngserve=\"--port 4201\"")
 	RootCmd.AddCommand(serveCmd)
 
 	// Here you will define your flags and configuration settings.
