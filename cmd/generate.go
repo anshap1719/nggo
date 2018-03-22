@@ -41,10 +41,22 @@ var generateCmd = &cobra.Command{
 	Short: "Generate a new project",
 	Long: `Generate a new project and install all dependencies.`,
 	Run: func(cmd *cobra.Command, args []string) {
+
+		wd, _ := os.Getwd()
+
+		if !strings.Contains(wd, os.Getenv("GOPATH") + "/src") {
+			fmt.Println(RedFunc()("Can't Generate New Project: Please use the project generator inside the src folder in your GOPATH"))
+			os.Exit(2)
+			return
+		}
+
 		if name == "" {
 			fmt.Errorf("%s", "no name provided")
 			return
 		}
+
+		fmt.Println(RedFunc()("Read Output Indicates Output Related To Angular") + "and" + BlueFunc()("Cyan/Green Output Indicates Output Related To Go Across All Commands"))
+
 		generateAngularProject(name)
 		generateGoProject(name)
 		if err := modifyAngularFiles(); err != nil {

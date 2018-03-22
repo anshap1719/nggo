@@ -25,7 +25,7 @@ import (
 var RootCmd = &cobra.Command{
 	Use:   "nggo",
 	Short: "A CLI For Working With Go + Angular Projects",
-	Long: `nggo is a CLI for working with Go and Angular projects combined. It can generate new projects, install dependencies, and start live development server so that you don't have to do each of thos separately for both Angular and Go.`,
+	Long: `nggo is a CLI for working with Go and Angular projects combined. It can generate new projects, install dependencies, and start live development server so that you don't have to do each of those separately for both Angular and Go.`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
