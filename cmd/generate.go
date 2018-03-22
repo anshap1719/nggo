@@ -32,20 +32,14 @@ var helloWorldServiceContent = "import { Injectable } from '@angular/core';\r\ni
 
 var environmentContent = "// The file contents for the current environment will overwrite these during build.\r\n// The build system defaults to the dev environment which uses `environment.ts`, but if you do\r\n// `ng build --env=prod` then `environment.prod.ts` will be used instead.\r\n// The list of which env maps to which file can be found in `.angular-cli.json`.\r\n\r\nexport const environment = {\r\n  production: false,\r\n  serverUrl: 'http://localhost:3000'\r\n};\r\n"
 
-var styles string
 var name string
 var ng string
 
 // generateCmd represents the generate command
 var generateCmd = &cobra.Command{
 	Use:   "generate",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Generate a new project",
+	Long: `Generate a new project and install all dependencies.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if name == "" {
 			fmt.Errorf("%s", "no name provided")
@@ -61,9 +55,8 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	generateCmd.Flags().StringVarP(&styles, "style", "s", "", "Set CSS Preprocessor To SCSS/LESS")
 	generateCmd.Flags().StringVarP(&name, "name", "n", "", "Set Project Name")
-	generateCmd.Flags().StringVarP(&ng, "ng", "", "", "Set Arguments For ng new")
+	generateCmd.Flags().StringVarP(&ng, "ng", "", "", "Set Arguments For ng new (Ex. nggo generate --ng=\"--skip-install --style=scss\")")
 	generateCmd.MarkFlagRequired("name")
 	RootCmd.AddCommand(generateCmd)
 

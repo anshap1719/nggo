@@ -27,17 +27,9 @@ var cfgFile string
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
-	Use:   "nggo2",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
+	Use:   "nggo",
+	Short: "A CLI For Working With Go + Angular Projects",
+	Long: `nggo is a CLI for working with Go and Angular projects combined. It can generate new projects, install dependencies, and start live development server so that you don't have to do each of thos separately for both Angular and Go.`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -55,7 +47,7 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.nggo2.yaml)")
+	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.nggo.yaml)")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -75,9 +67,9 @@ func initConfig() {
 			os.Exit(1)
 		}
 
-		// Search config in home directory with name ".nggo2" (without extension).
+		// Search config in home directory with name ".nggo" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".nggo2")
+		viper.SetConfigName(".nggo")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
