@@ -64,6 +64,16 @@ var generateCmd = &cobra.Command{
 			fmt.Errorf("error conecting go and angular: %s", err.Error())
 			return
 		}
+
+		fmt.Println(BlueFunc()("Project Generated Successfully."))
+		fmt.Println(BlueFunc()("Installing Dependencies..."))
+
+		installAngularDependencies()
+		installGoDependencies()
+
+		runExternalCmd("go", []string{"get", "-u", "github.com/codegangsta/gin"})
+
+		fmt.Println(BlueFunc()("Done"))
 	},
 }
 
