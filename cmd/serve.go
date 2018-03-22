@@ -25,7 +25,7 @@ var goserve string
 
 
 // serveCmd represents the serve command
-var serveCmd = &cobra.Command{
+var serveCmd = &cobra.Command {
 	Use:   "serve",
 	Short: "Start live development server",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -47,7 +47,7 @@ var serveCmd = &cobra.Command{
 			argss = append(argss, goArgs...)
 		}
 		os.Chdir("./src/server/")
-		go runExternalCmd("gin", []string{})
+		go runExternalCmd("gin", argss)
 
 		<-quit
 	},
