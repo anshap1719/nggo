@@ -51,7 +51,8 @@ var generateCmd = &cobra.Command{
 		}
 
 		if name == "" {
-			fmt.Errorf("%s", "no name provided")
+			fmt.Println(RedFunc()("Project Name Not Provided: Use -n or --name to set the project name"))
+			os.Exit(2)
 			return
 		}
 
