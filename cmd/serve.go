@@ -44,9 +44,7 @@ var serveCmd = &cobra.Command{
 
 		if goserve != "" {
 			goArgs := strings.Split(ngserve, " ")
-			for _, arg := range goArgs {
-				argss = append(argss, arg)
-			}
+			argss = append(argss, goArgs...)
 		}
 		os.Chdir("./src/server/")
 		go runExternalCmd("gin", []string{})
