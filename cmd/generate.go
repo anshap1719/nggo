@@ -65,15 +65,19 @@ var generateCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Println(BlueFunc()("Project Generated Successfully."))
-		fmt.Println(BlueFunc()("Installing Dependencies..."))
-
-		installAngularDependencies()
-		installGoDependencies()
-
 		runExternalCmd("go", []string{"get", "-u", "github.com/codegangsta/gin"})
 
-		fmt.Println(BlueFunc()("Done"))
+		fmt.Println(BlueFunc()("Project Generated Successfully."))
+
+
+		if !strings.Contains(ng, "--skip-install") {
+			fmt.Println(BlueFunc()("Installing Dependencies..."))
+
+			installAngularDependencies()
+			installGoDependencies()
+
+			fmt.Println(BlueFunc()("Done"))
+		}
 	},
 }
 
